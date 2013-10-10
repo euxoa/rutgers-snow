@@ -5,7 +5,7 @@ library(rstan)
 
 setwd("~/Desktop/rutgers-snow")
 
-snow <- read.table("~/Desktop/snow/snow.txt")
+snow <- read.table("snow.txt")
 names(snow) <- c("year", "month", "area")
 
 plot(snow, pch=".")
@@ -49,3 +49,4 @@ tquant$month <- as.factor(1:12)
 ggplot(tquant, aes(x=month, y=trend)) + 
   geom_pointrange(aes(ymin=llow, ymax=hhigh)) +
   geom_pointrange(aes(ymin=low, ymax=high), size=1) + theme_bw(30)
+
