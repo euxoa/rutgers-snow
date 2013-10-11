@@ -26,12 +26,15 @@ month.plot <- function (fit, par) {
 
 m <- stan_model("snowtrends.stan")
 sdat <- list(T = nrow(snow), y = sqrt(snow$area/mean(snow$area)), month=as.integer(snow$month))
-fit <- sampling(m, data = sdat, pars=c("err", "mum", "trend", "trend2", "sigma", "theta"), 
+fit <- sampling(m, data = sdat, pars=c("err", "mum", "trend", "trend2", "sigma", "theta", "model_snow"), 
                 iter = 5000, chains = 1, thin=1, init=0, nondiag_mass=T)
 plot(fit)
 
 snow$err <- get_posterior_mean(fit, pars="err")[,1]
+snow$pred <- get_posterior_mean(fit, pars="model_snow")[,1]
 ggplot(snow, aes(x=year+(month-1)/12, y=err)) + geom_line() + geom_smooth()
+ggplot(snow, aes(x=year, y=pred, color=as.factor(month))) + geom_line() +
+   geom_ribbon(aes(xmin=0.9*pred, xmax=1.1*pred))
 hist(snow$err, n=100)
 acf(ts(snow$err))
 

@@ -32,3 +32,10 @@ model {
 
   for(t in 1:T) err[t] ~ student_t(4, 0, sigma[month[t]]);
 }
+generated quantities {
+  real model_snow[T]; real st2;
+  for (t in 1:T) {
+     st2 <- (t-1)/(0.0+T);
+     model_snow[t] <- mum[month[t]] + st2*trend[month[t]] + (st2-.5)*(st2-.5)*trend2[month[t]];
+  }
+}
