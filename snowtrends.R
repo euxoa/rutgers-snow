@@ -25,6 +25,7 @@ month.plot <- function (fit, par) {
 }
 
 m <- stan_model("snowtrends.stan")
+sdat <- list(T = nrow(snow), y = sqrt(snow$area/mean(snow$area)), month=as.integer(snow$month))
 fit <- sampling(m, data = sdat, pars=c("err", "mum", "trend", "trend2", "sigma", "theta"), 
                 iter = 5000, chains = 1, thin=1, init=0, nondiag_mass=T)
 plot(fit)
@@ -35,11 +36,11 @@ hist(snow$err, n=100)
 acf(ts(snow$err))
 
 pdf(file="trendplots.pdf")
-month.plot(fit, "mum") + ylab("area") + ggtitle("Monthly area (standardized)")
-month.plot(fit, "trend") + geom_hline(yintercept=0, color="red") + ggtitle("Linear trends") + ylab("coef")
+month.plot(fit, "mum") + ylab("sqrt area") + ggtitle("Monthly sqrt area (standardized)")
+month.plot(fit, "trend") + geom_hline(yintercept=0, color="red") + ggtitle("Sqrt area linear trends") + ylab("coef")
 month.plot(fit, "trend2") + geom_hline(yintercept=0, color="red") + ggtitle("Trends: quadratic coeffs") + ylab("coef")
-month.plot(fit, "sigma") + ggtitle("Monthly modeling error")
-month.plot(fit, "theta") + geom_hline(yintercept=0, color="red") + ggtitle("Autocorrelation of error")
+month.plot(fit, "sigma") + ggtitle("Sigma of t4(0, sigma) monthly residual")
+month.plot(fit, "theta") + geom_hline(yintercept=0, color="red") + ggtitle("Modelled residual autocorrelation")
 ggplot(snow, aes(x=year, y=err)) + 
   geom_point()  + facet_wrap(~ month, scales="free_y") + geom_hline(yintercept=0, color="red") + 
   ggtitle("Monthly residuals")
