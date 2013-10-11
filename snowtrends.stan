@@ -24,7 +24,6 @@ transformed parameters {
 model {
   real pi;
   pi <- 3.141592654;
-  mum ~ normal(0,10); 
   for (t in 1:12) { 
     trend2[t] ~ cauchy(trend2_mean + trend2_amps*sin(2*pi*t/12)+trend2_ampc*cos(2*pi*t/12), trend2_sigma);
     trend[t] ~ cauchy(trend_mean + trend_amps*sin(2*pi*t/12)+trend_ampc*cos(2*pi*t/12), trend_sigma); }
