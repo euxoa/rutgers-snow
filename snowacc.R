@@ -30,11 +30,21 @@ n.iter <- 1000
 fit <- sampling(m, data = sdat, pars=c("err", "acc", "trend", "sigma"), 
                 iter = n.iter, chains = 1, thin=1, init=0, nondiag_mass=T)
 plot(fit)
-
+mt <- stan_model("snowtrends.stan")
+fitt <- sampling(mt, data = sdat, pars=c("err", "mum", "trend", "trend2", "sigma", "theta"), 
+                iter = n.iter, chains = 1, thin=1, init=0, nondiag_mass=T)
+plot(fitt)
+fit <- fitt
 snow$err <- get_posterior_mean(fit, pars="err")[,1]
 ggplot(snow, aes(x=year+(month-1)/12, y=err)) + geom_line() + geom_smooth()
 hist(snow$err, n=100)
-ggplot(snow, aes(x=year, y=err, color=as.factor(month))) + geom_point()  + facet_wrap(~ month, scales="free_y")
-month.plot(fit, "acc")
-month.plot(fit, "trend")
+acf(ts(snow$err))
+ggplot(snow, aes(x=year, y=err, color=as.factor(month))) + 
+  geom_point()  + facet_wrap(~ month, scales="free_y") + geom_hline(yintercept=0, color="red")
+month.plot(fit, "mum")
+month.plot(fit, "trend") + geom_hline(yintercept=0, color="red")
+month.plot(fit, "trend2") + geom_hline(yintercept=0, color="red")
+month.plot(fit, "sigma")
+month.plot(fit, "theta") + geom_hline(yintercept=0, color="red")
+
 
