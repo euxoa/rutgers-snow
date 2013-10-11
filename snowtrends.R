@@ -21,7 +21,7 @@ month.plot <- function (fit, par) {
   tquant$month <- as.factor(1:12)
   ggplot(tquant, aes_string(x="month", y=par)) + 
     geom_pointrange(aes(ymin=llow, ymax=hhigh)) +
-    geom_pointrange(aes(ymin=low, ymax=high), size=1) + theme_bw(30)
+    geom_pointrange(aes(ymin=low, ymax=high), size=1) + theme_bw()
 }
 
 m <- stan_model("snowtrends.stan")
@@ -33,12 +33,14 @@ snow$err <- get_posterior_mean(fit, pars="err")[,1]
 ggplot(snow, aes(x=year+(month-1)/12, y=err)) + geom_line() + geom_smooth()
 hist(snow$err, n=100)
 acf(ts(snow$err))
-ggplot(snow, aes(x=year, y=err, color=as.factor(month))) + 
-  geom_point()  + facet_wrap(~ month, scales="free_y") + geom_hline(yintercept=0, color="red")
-month.plot(fit, "mum")
-month.plot(fit, "trend") + geom_hline(yintercept=0, color="red")
-month.plot(fit, "trend2") + geom_hline(yintercept=0, color="red")
-month.plot(fit, "sigma")
-month.plot(fit, "theta") + geom_hline(yintercept=0, color="red")
 
-
+pdf(file="trendplots.pdf")
+month.plot(fit, "mum") + ylab("area") + ggtitle("Monthly area (standardized)")
+month.plot(fit, "trend") + geom_hline(yintercept=0, color="red") + ggtitle("Linear trends") + ylab("coef")
+month.plot(fit, "trend2") + geom_hline(yintercept=0, color="red") + ggtitle("Trends: quadratic coeffs") + ylab("coef")
+month.plot(fit, "sigma") + ggtitle("Monthly modeling error")
+month.plot(fit, "theta") + geom_hline(yintercept=0, color="red") + ggtitle("Autocorrelation of error")
+ggplot(snow, aes(x=year, y=err)) + 
+  geom_point()  + facet_wrap(~ month, scales="free_y") + geom_hline(yintercept=0, color="red") + 
+  ggtitle("Monthly residuals")
+dev.off()
