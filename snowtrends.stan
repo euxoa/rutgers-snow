@@ -30,7 +30,7 @@ model {
   theta ~ normal(0,2); 
   sigma ~ cauchy(0,5);
 
-  for(t in 1:T) err[t] ~ student_t(4, 0, sigma[month[t]]);
+  for(t in 1:T) y[t] ~ student_t(4, nu[t], sigma[month[t]]);
 }
 generated quantities {
   real model_snow[T]; real st2;
