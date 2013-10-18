@@ -31,10 +31,13 @@ fit <- sampling(m, data = sdat, pars=c("err", "mum", "trend", "trend2", "sigma",
 plot(fit)
 
 snow$err <- get_posterior_mean(fit, pars="err")[,1]
+mpred <- as.data.frame(t(apply(as.data.frame(fit, "model_snow"), 2, 
+                              function (x) quantile(x, c(0.05, 0.25, 0.5, 0.75, 0.95)))))
+names(mpred) <- c("llow", "low", "pred", "high", "hhigh")
 snow$pred <- get_posterior_mean(fit, pars="model_snow")[,1]
 ggplot(snow, aes(x=year+(month-1)/12, y=err)) + geom_line() + geom_smooth()
 ggplot(snow, aes(x=year, y=pred, color=as.factor(month))) + geom_line() +
-   geom_ribbon(aes(xmin=0.9*pred, xmax=1.1*pred))
+   geom_ribbon(aes(ymin=mpred$llow, ymax=mpred$hhigh, linetype=NA, fill=as.factor(month)), alpha=0.2)
 hist(snow$err, n=100)
 acf(ts(snow$err))
 
