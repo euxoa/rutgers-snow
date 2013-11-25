@@ -5,7 +5,7 @@ library(rstan)
 
 setwd("~/Desktop/rutgers-snow")
 
-snow <- read.table("snow.txt")
+snow <- read.table("http://climate.rutgers.edu/snowcover/files/moncov.nhland.txt")
 names(snow) <- c("year", "month", "area")
 
 plot(snow, pch=".")
